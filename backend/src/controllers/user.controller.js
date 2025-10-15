@@ -1,0 +1,10 @@
+import asyncHandler from "express-async-handler";
+import User from "../models/user.model.js";
+
+export const getUserProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ error: "User Not Found" });
+    res.status(200).json({ user });
+});
+
