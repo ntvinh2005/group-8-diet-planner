@@ -1,68 +1,61 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+/* Fallback base styles in case Tailwind preflight is missing in production */
+html, body, #root {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+/* Fallback styles for Auth split layout (applies when Tailwind responsive utilities are not present) */
+.auth-split{display:flex;flex-direction:column;min-height:100vh}
+.auth-left,.auth-right{width:100%;box-sizing:border-box;padding:24px}
+.auth-left{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#22c55e,#16a34a);color:white}
+.auth-right{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8fafc,#e5e7eb)}
+.auth-card{width:100%;max-width:420px;background:#ffffff;border-radius:1rem;padding:2rem 2rem 3rem;box-shadow:0 10px 25px rgba(2,6,23,0.08);transition:box-shadow .15s ease}
+.auth-card:hover{box-shadow:0 18px 40px rgba(2,6,23,0.12)}
+@media(min-width:1024px){.auth-split{flex-direction:row}.auth-left,.auth-right{width:50%;padding:48px}.auth-card{padding:2.5rem 2.5rem 3.5rem}}
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
   }
-  a:hover {
-    color: #747bff;
+}
+
+/* Fallback form controls so inputs look correct even without Tailwind utilities */
+.form-row{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d1d5db;border-radius:0.5rem;padding:0 12px;height:48px}
+.form-row input{flex:1 1 auto;outline:0;border:0;background:transparent;font-size:14px}
+.icon-16{width:16px;height:16px;color:#9ca3af;flex-shrink:0;display:inline-block}
+.primary-btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 32px;border-radius:1rem;color:#fff;background-image:linear-gradient(90deg,#22c55e,#16a34a);border:0}
+.primary-btn[disabled]{opacity:.6;cursor:not-allowed}
+.muted-link{color:#16a34a;text-decoration:none}
+.muted-link:hover{text-decoration:underline}
+
+/* Visible labels and per-field spacing */
+.form-field{display:block;margin-bottom:0.75rem}
+.form-label{display:block;margin-bottom:0.5rem;font-size:0.875rem;color:#374151;font-weight:600}
+.form-help{font-size:0.8125rem;color:#6b7280;margin-top:0.5rem}
+
+/* Card footer helper to give final elements breathing room */
+.card-footer{display:block;padding-top:0.75rem;padding-bottom:0.5rem}
+.card-footer .primary-btn{margin-bottom:0.75rem}
+.divider{height:1px;background:#e5e7eb;margin:0.75rem 0;border-radius:1px}
+.footer-text{margin-top:0.5rem;color:#374151}
+
+/* Muted form alert (less visually heavy) */
+.form-alert{display:flex;align-items:flex-start;gap:0.75rem;padding:0.5rem 0.75rem;background:#fff4f4;border:1px solid #fee2e2;color:#991b1b;border-radius:0.5rem;font-size:0.9375rem}
+.form-alert .icon-16{color:#f87171}
+.form-alert .message{line-height:1.2}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-  button {
-    background-color: #f9f9f9;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
