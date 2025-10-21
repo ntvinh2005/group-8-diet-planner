@@ -1,14 +1,38 @@
 import mongoose from "mongoose";
 import healthConditions from "../utils/healthConditions.js"
+import { ALLERGENS } from "./ingredient.model.js";
 
-const pantryEntrySchema = new mongoose.Schema(
+const pantryItemSchema = new mongoose.Schema(
     {
-        count: {
-            type: Number,
-            min: 0,
-            default: 0
+        sourceId: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "Ingredient", 
+            required: true 
+        },
+        name: { 
+            type: String, 
+            required: true 
+        },           
+        calories: { 
+            type: Number, 
+            required: true, 
+            min: 0 
+        },
+        allergenType: {
+            type: [String],
+            enum: ALLERGENS,
+            default: []
+        },               
+        sourceVersion: { 
+            type: Number, 
+            default: 1 
+        },      
+        count: { 
+            type: Number, 
+            min: 0, 
+            default: 1 
         }
-    },
+    }, 
     { _id: false }
 );
 
@@ -23,11 +47,14 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
+            lowercase: true
         },
         username: {
             type: String,
             required: true,
             unique: true,
+            minlength: 3,
+            maxlength: 32
         },
         password: {
             type: String,
@@ -46,14 +73,14 @@ const userSchema = new mongoose.Schema(
             },
             default: {}
         },
-        weeklyBudget: {
+        weeklyBudgetCents: {
             type: Number,
+            min: 0,
             default: 0
         },
         pantry: {
-            type: Map,
-            of: pantryEntrySchema,
-            default: {}
+            type: [ pantryItemSchema ], 
+            default: [] 
         }
     },
     { timestamps: true }

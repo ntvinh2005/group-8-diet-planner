@@ -1,19 +1,24 @@
 import mongoose from "mongoose";
 
+export const ALLERGENS = ["Milk", "Eggs", "Nuts", "Sesame", "Wheat", "Soy"];
+
 const ingredientSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    calorie: {
+    calories: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     allergenType: {
         type: [String],
-        enum: ["Milk", "Eggs", "Nuts", "Seasame", "Wheat", "Soy"],
+        enum: ALLERGENS,
         default: []
     }
 });
 
-export default Ingredient = mongoose.model("Ingredient", ingredientSchema);
+const Ingredient = mongoose.model("Ingredient", ingredientSchema);
+
+export default Ingredient;

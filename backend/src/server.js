@@ -1,20 +1,31 @@
 import express from "express";
 import dotenv from "dotenv";
-
+import { connectDB } from "./utils/dbConnect.js";
 import userRoutes from "./routes/user.route.js";
 
+dotenv.config();
+
 const app = express();
-
-const PORT = process.env.PORT || 5000;
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Hello From Server");
+    res.send("Hello From Server!");
 })
 
 app.use("/api/users", userRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Listening On Port ${PORT}`);
-});
+
+const PORT = process.env.PORT || 5000;
+
+(async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`Listening On Port http://localhost:${PORT}`);
+        });
+    }
+    catch(err) {
+        console.error("Failed to connect to MongoDB: ", err);
+        process.exit(1);
+    }
+})();

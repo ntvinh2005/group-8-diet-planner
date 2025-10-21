@@ -1,16 +1,9 @@
 import express from "express";
-import { getUserProfile } from "../controllers/user.controller.js";
-import { protectRoute } from "../middleware/auth.middleware.js";
+import { signUp, getUserProfile } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-// Public Route
+router.post("/signup", signUp);
 router.get("/profile/:username", getUserProfile);
-
-// Protected Routes
-// router.post("", protectRoute);
-// router.get("", protectRoute);
-// router.put("", protectRoute);
-// router.post("", protectRoute);
 
 export default router;

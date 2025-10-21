@@ -1,3 +1,5 @@
-export const healthConditions = {
+const healthConditions = {
 
 };
+
+export default healthConditions;
