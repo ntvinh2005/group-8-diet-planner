@@ -1,6 +1,12 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { authorizeRecipePerms } from "../middleware/authRecipePerms.middleware.js";
+import { getIngredient, 
+    searchIngredient, 
+    createIngredient, 
+    updateIngredient, 
+    deleteIngredient 
+} from "../controllers/ingredient.controller.js";
 
 const router = express.Router();
 
