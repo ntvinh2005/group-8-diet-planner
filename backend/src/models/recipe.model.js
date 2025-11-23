@@ -11,6 +11,10 @@ const recipeSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+        longDesciption: {
+            type: String,
+            default: ""
+        },
         numberOfStars: {
             type: Number,
             min: 0,

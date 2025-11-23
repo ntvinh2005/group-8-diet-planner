@@ -81,9 +81,11 @@ export const updateIngredient =  asyncHandler(async (req, res) => {
     try {
         const { ingredientID } = req.params;
 
-        const ingredient = await Ingredient.findByIdAndUpdate(ingredientID, req.body, { new: true, runValidators: true });
+        const updatedIngredient = await Ingredient.findByIdAndUpdate(ingredientID, req.body, { new: true, runValidators: true });
 
-        if (!ingredient) return res.status(404).json({ message: "Ingredient Not Found" });
+        if (!updatedIngredient) return res.status(404).json({ message: "Ingredient Not Found" });
+
+        return res.status(200).json({ message: "Ingredient Successfully Updated", updatedIngredient});
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
