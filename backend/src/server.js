@@ -4,11 +4,16 @@ import { connectDB } from "./utils/dbConnect.js";
 import userRoutes from "./routes/user.route.js";
 import recipeRoutes from "./routes/recipe.route.js";
 import ingredientRoutes from "./routes/ingredient.route.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:5173", // Adjust this to your frontend's origin
+    credentials: true,
+}));
 
 app.get("/", (req, res) => {
     res.send("Hello From Server!");

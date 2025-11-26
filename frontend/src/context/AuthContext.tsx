@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string): Promise<User> => {
-    const { data } = await axiosInstance.post("/auth/login", {
+    const { data } = await axiosInstance.post("/api/users/login", {
       email,
       password,
     });
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     username: string,
     password: string
   ): Promise<User> => {
-    const { data } = await axiosInstance.post("/auth/register", {
+    const { data } = await axiosInstance.post("/api/users/signup", {
       email,
       username,
       password,
@@ -57,11 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      await axiosInstance.post("/auth/logout");
-    } catch (error) {
-      void error;
-    }
+    // try {
+    //   await axiosInstance.post("/logout");
+    // } catch (error) {
+    //   void error;
+    // }
     clearAuth();
   };
 

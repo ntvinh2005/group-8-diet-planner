@@ -38,6 +38,8 @@ export const signUp = asyncHandler(async (req, res) => {
             pantry: Array.isArray(pantry) ? pantry : []
         });
 
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_TOKEN, { expiresIn: "7d"});
+
         return res.status(201).json({
             user: {
                 id: user._id,
@@ -46,7 +48,8 @@ export const signUp = asyncHandler(async (req, res) => {
                 username: user.username,
                 accountType: user.accountType,
                 createdAt: user.createdAt
-            }
+            },
+            token: token
         });
     } 
     catch (err) {
