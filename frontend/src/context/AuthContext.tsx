@@ -1,45 +1,43 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import axiosInstance from "../lib/axios";
 import { AuthContext } from "./auth";
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-}
-
-const AUTH_STORAGE_KEY = "auth";
+import { useAuthStore, type User } from "../store/authStore";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    token: null,
-  });
+  const { user, token, setUser, setToken, setLoading, setError, clearAuth } =
+    useAuthStore();
 
-  const persistAuth = (user: User, token: string) => {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user, token }));
-    setState({ user, token });
-  };
-
-  const clearAuth = () => {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-    setState({ user: null, token: null });
+  const persistAuth = (newUser: User, newToken: string) => {
+    setUser(newUser);
+    setToken(newToken);
+    setError(null);
   };
 
   const login = async (email: string, password: string): Promise<User> => {
-    const { data } = await axiosInstance.post("/api/users/login", {
-      email,
-      password,
-    });
-    persistAuth(data.user, data.token);
-    return data.user;
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axiosInstance.post("/api/users/login", {
+        email,
+        password,
+      });
+      const newUser: User = {
+        userId: data.user.userId || data.user.id,
+        id: data.user.userId || data.user.id,
+        email: data.user.email,
+        username: data.user.username,
+        accountType: data.user.accountType,
+        role: data.user.accountType,
+        healthConditions: data.user.healthConditions,
+        weeklyBudgetCents: data.user.weeklyBudgetCents,
+        pantry: data.user.pantry,
+      };
+      persistAuth(newUser, data.token);
+      return newUser;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (
@@ -47,71 +45,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     username: string,
     password: string
   ): Promise<User> => {
-    const { data } = await axiosInstance.post("/api/users/signup", {
-      email,
-      username,
-      password,
-    });
-    persistAuth(data.user, data.token);
-    return data.user;
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axiosInstance.post("/api/users/signup", {
+        email,
+        username,
+        password,
+      });
+      const newUser: User = {
+        userId: data.user.userId || data.user.id,
+        id: data.user.userId || data.user.id,
+        email: data.user.email,
+        username: data.user.username,
+        accountType: data.user.accountType,
+        role: data.user.accountType,
+        healthConditions: data.user.healthConditions,
+        weeklyBudgetCents: data.user.weeklyBudgetCents,
+        pantry: data.user.pantry,
+      };
+      persistAuth(newUser, data.token);
+      return newUser;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    // try {
-    //   await axiosInstance.post("/logout");
-    // } catch (error) {
-    //   void error;
-    // }
     clearAuth();
   };
 
   const hydrate = async () => {
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!stored) return;
-
+    if (!token || !user) return;
+    setLoading(true);
     try {
-      const { user, token } = JSON.parse(stored);
-      setState({ user, token });
-
-      const { data } = await axiosInstance.get("/auth/me");
-      setState({ user: data.user, token });
+      const { data } = await axiosInstance.get(
+        "/api/users/profile/" + user.username
+      );
+      const newUser: User = {
+        userId: data.userId || data.id,
+        id: data.userId || data.id,
+        email: data.email,
+        username: data.username,
+        accountType: data.accountType,
+        role: data.accountType,
+        healthConditions: data.healthConditions,
+        weeklyBudgetCents: data.weeklyBudgetCents,
+        pantry: data.pantry,
+      };
+      setUser(newUser);
     } catch (error) {
-      void error;
+      setError(
+        error instanceof Error ? error.message : "Failed to hydrate auth"
+      );
       clearAuth();
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!stored) return;
-
-    const loadAuth = async () => {
-      try {
-        const { user, token } = JSON.parse(stored);
-        setState({ user, token });
-
-        const { data } = await axiosInstance.get("/auth/me");
-        setState({ user: data.user, token });
-      } catch (error) {
-        void error;
-        clearAuth();
-      }
-    };
-
-    loadAuth();
-
-    const handleUnauthorized = () => {
-      clearAuth();
-    };
-
-    window.addEventListener("auth:unauthorized", handleUnauthorized);
-    return () =>
-      window.removeEventListener("auth:unauthorized", handleUnauthorized);
-  }, []);
+    if (token && user) {
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${token}`;
+    } else {
+      delete axiosInstance.defaults.headers.common["Authorization"];
+    }
+  }, [token, user]);
 
   return (
     <AuthContext.Provider
-      value={{ ...state, login, register, logout, hydrate }}
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        hydrate,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,6 @@
 // Recipe Routes
 import express from "express"
-import { protectRoute } from "../middleware/auth.middleware";
+import { protectRoute } from "../middleware/auth.middleware.js";
 import { authorizeRecipePerms } from "../middleware/authRecipePerms.middleware.js";
 import { listRecipes,
     getRecipe,

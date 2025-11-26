@@ -10,10 +10,25 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:5173", // Adjust this to your frontend's origin
-    credentials: true,
-}));
+// Configure CORS: allow origins from environment or fall back to common dev ports
+const allowedOrigins = process.env.FRONTEND_ORIGINS
+    ? process.env.FRONTEND_ORIGINS.split(",").map((s) => s.trim())
+    : ["http://localhost:5173", "http://localhost:5174"];
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // Allow non-browser requests (e.g. curl, server-to-server) where origin is undefined
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.indexOf(origin) !== -1) {
+                return callback(null, true);
+            }
+            const msg = "The CORS policy for this site does not allow access from the specified Origin.";
+            return callback(new Error(msg), false);
+        },
+        credentials: true,
+    })
+);
 
 app.get("/", (req, res) => {
     res.send("Hello From Server!");

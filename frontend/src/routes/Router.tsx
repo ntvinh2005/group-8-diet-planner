@@ -9,6 +9,13 @@ import { RegisterPage } from "../pages/RegisterPage";
 import { LogoutPage } from "../pages/LogoutPage";
 import { DashboardPage } from "../pages/DashboardPage";
 import { AdminPage } from "../pages/AdminPage";
+import { RecipesPage } from "../pages/RecipesPage";
+import { RecipePage } from "../pages/RecipePage";
+import { RecipeFormPage } from "../pages/RecipeFormPage";
+import { IngredientsPage } from "../pages/IngredientsPage";
+import { IngredientFormPage } from "../pages/IngredientFormPage";
+import { PantryPage } from "../pages/PantryPage";
+import { ProfilePage } from "../pages/ProfilePage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { RoleGuard } from "../components/RoleGuard";
 
@@ -40,6 +47,42 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <DashboardPage />,
+      },
+      {
+        path: "/recipes",
+        element: <RecipesPage />,
+      },
+      {
+        path: "/recipes/new",
+        element: <RecipeFormPage />,
+      },
+      {
+        path: "/recipes/:recipeId",
+        element: <RecipePage />,
+      },
+      {
+        path: "/recipes/:recipeId/edit",
+        element: <RecipeFormPage />,
+      },
+      {
+        path: "/ingredients",
+        element: <IngredientsPage />,
+      },
+      {
+        path: "/ingredients/new",
+        element: <IngredientFormPage />,
+      },
+      {
+        path: "/ingredients/:ingredientId/edit",
+        element: <IngredientFormPage />,
+      },
+      {
+        path: "/pantry",
+        element: <PantryPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
       {
         element: <RoleGuard />,

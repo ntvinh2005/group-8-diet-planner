@@ -1,7 +1,7 @@
 // Controller For Recipes
 import asyncHandler from 'express-async-handler';
 import dotenv from 'dotenv';
-import Recipe from '../models/recipe.model';
+import Recipe from '../models/recipe.model.js';
 
 dotenv.config();
 
@@ -26,15 +26,17 @@ export const listRecipes = asyncHandler(async (req, res) => {
         }
 
         const [results, resultsTotal] = await Promise.all([
-            Recipe.find(filter).limit(Number(limitPerPage), 
-            Recipe.countDocuments(filter))
+            Recipe.find(filter).limit(Number(limitPerPage) || 10),
+            Recipe.countDocuments(filter)
         ]);
+
+        const totalPages = Math.ceil(resultsTotal / (Number(limitPerPage) || 10));
 
         return res.status(200).json({
             results,
-            limit: Number(limitPerPage),
+            limit: Number(limitPerPage) || 10,
             resultsTotal,
-            totalPages: Math.ceil(totalPages / limitPerPage)
+            totalPages
         });
 
     } catch(err) {

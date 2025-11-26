@@ -1,18 +1,9 @@
 import { createContext } from "react";
+import type { User } from "../store/authStore";
 
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: string;
-}
-
-interface AuthState {
+export interface AuthContextValue {
   user: User | null;
   token: string | null;
-}
-
-export interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<User>;
   register: (
     email: string,

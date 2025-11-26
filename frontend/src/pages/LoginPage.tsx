@@ -25,7 +25,8 @@ export function LoginPage() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const passwordValid =
     password.length >= 8 && /(?=.*[a-zA-Z])(?=.*\d)/.test(password);
-  const formValid = emailValid && passwordValid;
+  // allow submit when fields are filled; keep detailed validation messages
+  const formValid = email.trim() !== "" && password.trim() !== "";
 
   useEffect(() => {
     setApiError("");

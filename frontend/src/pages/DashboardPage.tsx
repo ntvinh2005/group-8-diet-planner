@@ -1,102 +1,153 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../components/ui/card";
+import { ArrowRight, UtensilsCrossed, PackageOpen, Carrot } from "lucide-react";
 
 export function DashboardPage() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-bold text-lg">
-              {user?.username?.charAt(0).toUpperCase()}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Navigation */}
+      <nav className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow-lg">
+              {user?.username?.charAt(0).toUpperCase() || "B"}
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-800">
-                BudgetBits
-              </h1>
-              <p className="text-xs text-gray-500">
-                Your meal planning companion
+              <h1 className="text-xl font-bold text-slate-900">BudgetBits</h1>
+              <p className="text-xs text-slate-500 font-medium">
+                Smart Meal Planning
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {user?.role === "admin" && (
-              <Link
-                to="/admin"
-                className="inline-flex items-center h-10 px-4 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <span className="mr-2">⚙️</span>
-                Admin
+            <Link to="/profile">
+              <Button variant="ghost" size="sm" className="font-medium">
+                Profile
+              </Button>
+            </Link>
+            {user?.accountType === "Admin" && (
+              <Link to="/admin">
+                <Button variant="ghost" size="sm" className="font-medium">
+                  Admin
+                </Button>
               </Link>
             )}
-            <Link
-              to="/logout"
-              className="inline-flex items-center h-10 px-4 rounded-xl bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              <span className="mr-2">🚪</span>
-              Sign Out
+            <Link to="/logout">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-200 text-red-600 hover:bg-red-50 font-medium"
+              >
+                Sign Out
+              </Button>
             </Link>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-16 space-y-16">
+        {/* Header Section */}
+        <div className="space-y-3 text-center md:text-left">
+          <h2 className="text-5xl md:text-6xl font-bold text-slate-900 tracking-tight">
             Welcome back, {user?.username}! 👋
           </h2>
-          <p className="text-gray-600">
+          <p className="text-xl text-slate-600 max-w-2xl">
             Plan your meals, save money, and enjoy stress-free cooking.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white shadow-lg hover:shadow-xl transition-shadow rounded-2xl p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">
-                  Pantry Items Expiring
+        {/* Feature Cards */}
+        <div className="grid md:grid-cols-3 gap-8">
+          <Link to="/recipes" className="group">
+            <Card className="h-full cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-slate-200/60">
+              <CardHeader className="space-y-4 pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="p-3 rounded-xl bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                    <UtensilsCrossed className="w-7 h-7 text-blue-600" />
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                </div>
+                <CardTitle className="text-2xl">Recipes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 leading-relaxed">
+                  Discover delicious meals and explore culinary options
                 </p>
-                <p className="text-3xl font-bold text-green-600">12</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Check your pantry soon
-                </p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-2xl">🥗</span>
-              </div>
-            </div>
-          </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <div className="bg-white shadow-lg hover:shadow-xl transition-shadow rounded-2xl p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Saved This Week</p>
-                <p className="text-3xl font-bold text-amber-600">$18</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Keep up the great work!
+          <Link to="/pantry" className="group">
+            <Card className="h-full cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-slate-200/60">
+              <CardHeader className="space-y-4 pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="p-3 rounded-xl bg-green-50 group-hover:bg-green-100 transition-colors">
+                    <PackageOpen className="w-7 h-7 text-green-600" />
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
+                </div>
+                <CardTitle className="text-2xl">Pantry</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 leading-relaxed">
+                  Manage and organize your stored ingredients
                 </p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                <span className="text-2xl">💰</span>
-              </div>
-            </div>
-          </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link to="/ingredients" className="group">
+            <Card className="h-full cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-slate-200/60">
+              <CardHeader className="space-y-4 pb-4">
+                <div className="flex items-start justify-between">
+                  <div className="p-3 rounded-xl bg-orange-50 group-hover:bg-orange-100 transition-colors">
+                    <Carrot className="w-7 h-7 text-orange-600" />
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-all" />
+                </div>
+                <CardTitle className="text-2xl">Ingredients</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 leading-relaxed">
+                  Browse and search all available ingredients
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
-        <div className="bg-white shadow-lg hover:shadow-xl transition-shadow rounded-2xl p-8 text-center">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            Ready to start planning?
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Create your first meal plan and start saving money today.
-          </p>
-          <button className="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-2xl text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-            Plan My Meals
-          </button>
-        </div>
+        {/* Call to Action */}
+        <Card className="border-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white shadow-2xl">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-white text-3xl font-bold">
+              Start Your Meal Planning Journey
+            </CardTitle>
+            <CardDescription className="text-blue-100 text-lg mt-2">
+              Explore recipes, manage your pantry, and create nutritious meal
+              plans while staying within your budget.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <Link to="/recipes">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl transition-all"
+              >
+                Explore Recipes <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

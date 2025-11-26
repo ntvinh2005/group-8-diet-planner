@@ -1,7 +1,7 @@
 // Controller For Ingredients
 import asyncHandler from 'express-async-handler';
 import dotenv from 'dotenv';
-import { Ingredient, ALLERGENS } from '../models/ingredient.model.js';
+import Ingredient, { ALLERGENS } from '../models/ingredient.model.js';
 
 dotenv.config();
 
@@ -38,7 +38,7 @@ export const searchIngredient =  asyncHandler(async (req, res) => {
 
         const ingredientsFound = await Ingredient.find(filter);
 
-        return res.status(200).json({ ingredientsFound });
+        return res.status(200).json(ingredientsFound);
 
     } catch(err) {
         console.log(err);
@@ -51,11 +51,11 @@ export const createIngredient =  asyncHandler(async (req, res) => {
 
         const { ingredientName, ingredientCalories, ingredientAllergens } = req.body;
 
-        if (!(typeof ingredientName === "string" && ingredient.trim().length > 0)) return req.status(400).json({ message: "Ingredient Name Must Be a String" });
+        if (!(typeof ingredientName === "string" && ingredientName.trim().length > 0)) return res.status(400).json({ message: "Ingredient Name Must Be a String" });
 
-        if (!(Number.isFinite(Number(ingredientCalories)))) return req.status(400).json({ message: "Ingredient Calorie Count Must Be a Number" });
+        if (!(Number.isFinite(Number(ingredientCalories)))) return res.status(400).json({ message: "Ingredient Calorie Count Must Be a Number" });
 
-        if (ingredientCalories < 0) return req.status(400).json({ message: "Calorie Count Must Be Positive" });
+        if (ingredientCalories < 0) return res.status(400).json({ message: "Calorie Count Must Be Positive" });
 
         const validationHelper = (arr, arrAllowed) => {
             return (Array.isArray(arr) && arr.every(item => typeof item === "string" && arrAllowed.includes(item)));

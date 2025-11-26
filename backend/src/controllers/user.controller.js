@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
 import Ingredient from "../models/ingredient.model.js";
 
 dotenv.config();
@@ -72,7 +73,7 @@ export const getUserProfile = asyncHandler(async (req, res) => {
     try {
         const { username } = req.params;
         const user = await User.findOne({ username })
-            .select("userId username accountType weeklyBudgetCents pantry createdAt");
+            .select("userId email username accountType healthConditions weeklyBudgetCents pantry createdAt");
 
         if (!user) return res.status(404).json({ message: "User Not Found" });
         return res.json({ user });
@@ -99,7 +100,18 @@ export const logIn = asyncHandler(async (req, res) => {
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_TOKEN, { expiresIn: "7d"});
 
-        return res.status(200).json({ message: "Login Successful", token});
+        return res.status(200).json({
+            message: "Login Successful",
+            token,
+            user: {
+                id: user._id,
+                userId: user.userId,
+                email: user.email,
+                username: user.username,
+                accountType: user.accountType,
+                createdAt: user.createdAt
+            }
+        });
 
     } catch (err) {
         console.log(err);
@@ -109,9 +121,10 @@ export const logIn = asyncHandler(async (req, res) => {
 
 export const updateUser = asyncHandler(async (req, res) => {
     try {
-        const { userID } = req.params;
-        
-        const user = await User.findOneAndUpdate( { userId: userID }, req.body, { new: true });
+        const { id } = req.params;
+        const userFilter = mongoose.isValidObjectId(id) ? { _id: id } : { userId: id };
+
+        const user = await User.findOneAndUpdate(userFilter, req.body, { new: true });
 
         if (!user) return res.status(404).json({ message: "User Not Found" });
         return res.status(200).json({ message: "User Has Been Updated", user: user});
@@ -124,21 +137,23 @@ export const updateUser = asyncHandler(async (req, res) => {
 
 export const addPantryItem = asyncHandler(async (req, res) => {
     try {
-        const { userID } = req.params;
-        const { pantryID, count = 1 } = req.body;
+        const { id } = req.params;
+        const { sourceId, count = 1 } = req.body;
 
-        if (!pantryID || count <= 0) return res.status(400).json({ message: "Pantry Item ID Is Needed and Count Must Be Greater Than 0"});
+        if (!sourceId || count <= 0) return res.status(400).json({ message: "Ingredient ID Is Needed and Count Must Be Greater Than 0"});
 
-        const ingredient = await Ingredient.findById({ pantryID }).lean();
+        const ingredient = await Ingredient.findById(sourceId).lean();
 
         if (!ingredient) return res.status(404).json({ message: "Ingredient Cannot Be Found"});
 
+        const userFilter = mongoose.isValidObjectId(id) ? { _id: id } : { userId: id };
+
         const result = await User.findOneAndUpdate(
-            { userId: userID, "pantry.sourceId": { $ne: ingredient._id }},
+            { ...userFilter, "pantry.sourceId": { $ne: ingredient._id }},
             {
                 $push: {
                     pantry: {
-                        sourceId: ingredient.sourceId,
+                        sourceId: ingredient._id,
                         name: ingredient.name,
                         calories: ingredient.calories,
                         allergenType: ingredient.allergenType ?? [],
@@ -153,7 +168,7 @@ export const addPantryItem = asyncHandler(async (req, res) => {
         if (result) return res.json({ message: "Pantry Item Added", user: result });
 
         const incResult = await User.findOneAndUpdate(
-            { userId: userID, "pantry.sourceId": ingredient._id },
+            { ...userFilter, "pantry.sourceId": ingredient._id },
             { $inc: { "pantry.$.count": count } },
             { new: true, runValidators: true }
         ).lean();
@@ -169,25 +184,26 @@ export const addPantryItem = asyncHandler(async (req, res) => {
 
 export const updatePantry = asyncHandler(async (req, res) => {
     try {
-        const { userID, ingredeintID } = req.params;
+        const { id, ingredientId } = req.params;
         const { count, incrementCount } = req.body;
         
-        if (!Number.isFinite(count) || !Number.isFinite(incrementCount)) return res.status(400).json({ message: "Count and incrementCount Must Be Integers"});
+        if (!Number.isFinite(count) && !Number.isFinite(incrementCount)) return res.status(400).json({ message: "Count or incrementCount Must Be Provided"});
 
-        const user = await User.findOne( {userId: userID}, {pantry: 1} ).lean();
+        const userFilter = mongoose.isValidObjectId(id) ? { _id: id } : { userId: id };
+        const user = await User.findOne( userFilter, {pantry: 1} ).lean();
 
         if (!user) return res.status(404).json({ message: "User Not Found" });
 
-        const ingredient = user.pantry.find(ing => String(ing.sourceId) === String(ingredeintID));
+        const ingredient = user.pantry.find(ing => String(ing.sourceId) === String(ingredientId));
 
         if (!ingredient) return res.status(404).json({ message: "Pantry Item Not Found" });
 
-        const newCount = Number.isFinite(count) ? count : ingredient.count + incrementCount;
+        const newCount = Number.isFinite(count) ? count : ingredient.count + (incrementCount || 0);
 
         if (newCount <= 0) return res.status(400).json({ message: "New Item Count Cannot Be Less Than Zero" });
 
         const updatedUser = await User.findOneAndUpdate(
-            { userId: userID, "pantry.sourceId": ingredeintID },
+            { ...userFilter, "pantry.sourceId": ingredientId },
             { $set: { "pantry.$.count": newCount } },
             { new: true, runValidators: true }
          ).lean();
@@ -201,10 +217,11 @@ export const updatePantry = asyncHandler(async (req, res) => {
 
 export const deletePantryItem = asyncHandler(async (req, res) => {
     try {
-        const { userID, ingredientID } = req.params;
+        const { id, ingredientId } = req.params;
+        const userFilter = mongoose.isValidObjectId(id) ? { _id: id } : { userId: id };
         const updatedUser = await User.findOneAndUpdate(
-            { userId: userID }, 
-            { $pull: { pantry: ingredientID }},
+            userFilter,
+            { $pull: { pantry: { sourceId: ingredientId } }},
             { new: true }
         );
 
@@ -220,11 +237,13 @@ export const deletePantryItem = asyncHandler(async (req, res) => {
 
 export const deleteUser = asyncHandler(async (req, res) => {
     try {
-        const { id } = req.body;
-        const deletedUser = await User.findOneAndDelete({id: id});
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) return res.status(401).json({ message: "Unauthorized" });
+        const userFilter = mongoose.isValidObjectId(userId) ? { _id: userId } : { userId: userId };
+        const deletedUser = await User.findOneAndDelete(userFilter);
         if (!deletedUser) return res.status(404).json({ message: "User Not Found" });
 
-        return res.json({ message: "User Has Been Sucessfully Deleted" });
+        return res.json({ message: "User Has Been Successfully Deleted" });
     }
     catch (err) {
         console.log(err)

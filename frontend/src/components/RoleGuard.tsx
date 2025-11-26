@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 export function RoleGuard() {
   const { user } = useAuth();
 
-  if (user?.role !== "admin") {
+  if (user?.accountType !== "Admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
