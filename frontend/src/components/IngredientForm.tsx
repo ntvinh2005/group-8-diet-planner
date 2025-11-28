@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Ingredient } from "../lib/api";
 import { Button } from "./Button";
 import { TextField } from "./TextField";
@@ -18,16 +18,33 @@ export function IngredientForm({
 }: IngredientFormProps) {
   const [formData, setFormData] = useState({
     name: ingredient?.name || "",
-    calories: ingredient?.calories || 0,
+    calories: ingredient?.calories ?? "",
     allergenType: ingredient?.allergenType || [],
   });
 
+  useEffect(() => {
+    if (ingredient) {
+      setFormData({
+        name: ingredient.name || "",
+        calories: ingredient.calories ?? "",
+        allergenType: ingredient.allergenType || [],
+      });
+    }
+  }, [ingredient]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "calories" ? parseInt(value) || 0 : value,
-    }));
+    if (name === "calories") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value === "" ? "" : parseInt(value) || 0,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const toggleAllergen = (allergen: string) => {
@@ -41,7 +58,13 @@ export function IngredientForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      calories:
+        typeof formData.calories === "string"
+          ? parseInt(formData.calories)
+          : formData.calories,
+    });
   };
 
   return (

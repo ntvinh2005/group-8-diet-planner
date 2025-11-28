@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Recipe } from "../lib/api";
 import { Button } from "./Button";
 import { TextField } from "./TextField";
@@ -16,6 +16,17 @@ export function RecipeForm({ recipe, onSubmit, isLoading }: RecipeFormProps) {
     longDesciption: recipe?.longDesciption || "",
     image: recipe?.image || "",
   });
+
+  useEffect(() => {
+    if (recipe) {
+      setFormData({
+        name: recipe.name || "",
+        shortDesciption: recipe.shortDesciption || "",
+        longDesciption: recipe.longDesciption || "",
+        image: recipe.image || "",
+      });
+    }
+  }, [recipe]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

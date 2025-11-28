@@ -1,13 +1,15 @@
 import User from "../models/user.model.js";
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 
 export const authorizeRecipePerms = asyncHandler( async (req, res, next) => {
     try {
-        const { userID } = req.body;
+        const userId = req.user?.id || req.user?._id;
 
-        if (!userID) return res.status(400).json({ message: "User Id Is Required" });
+        if (!userId) return res.status(400).json({ message: "User Id Is Required" });
 
-        const user = await User.findOne({ userId: userID });
+        const userFilter = mongoose.isValidObjectId(userId) ? { _id: userId } : { userId: userId };
+        const user = await User.findOne(userFilter);
 
         if (!user) return res.status(404).json({ message: "User Not Found" });
 

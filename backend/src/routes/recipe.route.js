@@ -4,6 +4,7 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 import { authorizeRecipePerms } from "../middleware/authRecipePerms.middleware.js";
 import { listRecipes,
     getRecipe,
+    searchRecipe,
     rateRecipe,
     createRecipe,
     updateRecipe,
@@ -14,12 +15,13 @@ const router = express.Router();
 
 // Public Routes
 router.get("/", listRecipes);
-router.get("/:recipeID", getRecipe);
+router.get("/search/query", searchRecipe);
+router.get("/:recipeId", getRecipe);
 
 // Private Routes
-router.patch("/:recipeID/numStars", protectRoute, rateRecipe);
+router.patch("/:recipeId/numStars", protectRoute, rateRecipe);
 router.post("/create", protectRoute, authorizeRecipePerms, createRecipe);
-router.put("/:recipeID", protectRoute, authorizeRecipePerms, updateRecipe);
-router.delete("/:recipeID", protectRoute, authorizeRecipePerms, deleteRecipe);
+router.put("/:recipeId", protectRoute, authorizeRecipePerms, updateRecipe);
+router.delete("/:recipeId", protectRoute, authorizeRecipePerms, deleteRecipe);
 
 export default router;

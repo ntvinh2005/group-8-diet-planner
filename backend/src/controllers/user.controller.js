@@ -235,6 +235,82 @@ export const deletePantryItem = asyncHandler(async (req, res) => {
     }
 });
 
+export const upgradeToCreator = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) return res.status(401).json({ message: "Unauthorized" });
+        const userFilter = mongoose.isValidObjectId(userId) ? { _id: userId } : { userId: userId };
+        
+        const user = await User.findOne(userFilter);
+        
+        if (!user) return res.status(404).json({ message: "User Not Found" });
+        
+        if (user.accountType === "Creator" || user.accountType === "Admin") {
+            return res.status(400).json({ message: "User is already a Creator or Admin" });
+        }
+        
+        user.accountType = "Creator";
+        await user.save();
+        
+        return res.json({ 
+            user: {
+                userId: user.userId,
+                email: user.email,
+                username: user.username,
+                accountType: user.accountType,
+                healthConditions: user.healthConditions,
+                weeklyBudgetCents: user.weeklyBudgetCents,
+                pantry: user.pantry
+            },
+            message: "Successfully upgraded to Creator" 
+        });
+    } 
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+export const downgradeToFollower = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) return res.status(401).json({ message: "Unauthorized" });
+        const userFilter = mongoose.isValidObjectId(userId) ? { _id: userId } : { userId: userId };
+        
+        const user = await User.findOne(userFilter);
+        
+        if (!user) return res.status(404).json({ message: "User Not Found" });
+        
+        if (user.accountType === "Admin") {
+            return res.status(400).json({ message: "Admins cannot downgrade" });
+        }
+        
+        if (user.accountType === "Follower") {
+            return res.status(400).json({ message: "User is already a Follower" });
+        }
+        
+        user.accountType = "Follower";
+        await user.save();
+        
+        return res.json({ 
+            user: {
+                userId: user.userId,
+                email: user.email,
+                username: user.username,
+                accountType: user.accountType,
+                healthConditions: user.healthConditions,
+                weeklyBudgetCents: user.weeklyBudgetCents,
+                pantry: user.pantry
+            },
+            message: "Successfully downgraded to Follower" 
+        });
+    } 
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 export const deleteUser = asyncHandler(async (req, res) => {
     try {
         const userId = req.user?.id || req.user?._id;

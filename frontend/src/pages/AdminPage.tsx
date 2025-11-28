@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { Logo } from "../components/Logo";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -18,17 +19,20 @@ export function AdminPage() {
       {/* Navigation */}
       <nav className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white font-bold shadow-lg">
-              A
-            </div>
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 font-semibold text-slate-900 hover:text-slate-700 transition-colors"
+          >
+            <Logo className="w-10 h-10" />
             <div>
-              <h1 className="text-xl font-semibold text-slate-900">
+              <h1 className="text-lg font-semibold text-slate-900">
                 Admin Panel
               </h1>
-              <p className="text-sm text-slate-500">BudgetBits Control</p>
+              <p className="text-xs text-slate-500 font-medium">
+                BudgetBits Control
+              </p>
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-red-100 text-red-700">
               {user?.accountType?.toUpperCase()}

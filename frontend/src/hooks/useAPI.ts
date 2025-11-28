@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Recipe, Ingredient, User, PantryItem } from "../lib/api";
 import { recipeAPI, ingredientAPI, userAPI } from "../lib/api";
+import { useAuthStore } from "../store/authStore";
 
 export const useRecipes = () => {
   return useQuery({
@@ -14,6 +15,14 @@ export const useRecipe = (recipeId: string) => {
     queryKey: ["recipe", recipeId],
     queryFn: () => recipeAPI.getRecipe(recipeId),
     enabled: !!recipeId,
+  });
+};
+
+export const useSearchRecipes = (query: string) => {
+  return useQuery({
+    queryKey: ["recipes", "search", query],
+    queryFn: () => recipeAPI.searchRecipe(query),
+    enabled: true,
   });
 };
 
@@ -65,7 +74,7 @@ export const useSearchIngredients = (query: string) => {
   return useQuery({
     queryKey: ["ingredients", "search", query],
     queryFn: () => ingredientAPI.searchIngredient(query),
-    enabled: query.length > 0,
+    enabled: true,
   });
 };
 
@@ -83,6 +92,10 @@ export const useCreateIngredient = () => {
     mutationFn: (ingredient: Partial<Ingredient>) =>
       ingredientAPI.createIngredient(ingredient),
     onSuccess: () => {
+      // Invalidate the search cache with empty query to refetch all ingredients
+      queryClient.invalidateQueries({
+        queryKey: ["ingredients", "search", ""],
+      });
       queryClient.invalidateQueries({ queryKey: ["ingredients"] });
     },
   });
@@ -130,6 +143,66 @@ export const useUpdateUser = (userId: string, username?: string) => {
       } else {
         queryClient.invalidateQueries({ queryKey: ["user"] });
       }
+    },
+  });
+};
+
+export const useUpgradeToCreator = (username?: string) => {
+  const queryClient = useQueryClient();
+  const { setUser } = useAuthStore();
+  return useMutation({
+    mutationFn: () => userAPI.upgradeToCreator(),
+    onSuccess: (updatedUser) => {
+      // Update auth store with new account type
+      setUser({
+        userId: updatedUser.userId,
+        id: updatedUser.userId,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        accountType: updatedUser.accountType as
+          | "Follower"
+          | "Creator"
+          | "Admin",
+        role: updatedUser.accountType as "Follower" | "Creator" | "Admin",
+        healthConditions: updatedUser.healthConditions,
+        weeklyBudgetCents: updatedUser.weeklyBudgetCents,
+        pantry: updatedUser.pantry,
+      });
+      // Invalidate cache
+      if (username) {
+        queryClient.invalidateQueries({ queryKey: ["user", username] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+};
+
+export const useDowngradeToFollower = (username?: string) => {
+  const queryClient = useQueryClient();
+  const { setUser } = useAuthStore();
+  return useMutation({
+    mutationFn: () => userAPI.downgradeToFollower(),
+    onSuccess: (updatedUser) => {
+      // Update auth store with new account type
+      setUser({
+        userId: updatedUser.userId,
+        id: updatedUser.userId,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        accountType: updatedUser.accountType as
+          | "Follower"
+          | "Creator"
+          | "Admin",
+        role: updatedUser.accountType as "Follower" | "Creator" | "Admin",
+        healthConditions: updatedUser.healthConditions,
+        weeklyBudgetCents: updatedUser.weeklyBudgetCents,
+        pantry: updatedUser.pantry,
+      });
+      // Invalidate cache
+      if (username) {
+        queryClient.invalidateQueries({ queryKey: ["user", username] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };

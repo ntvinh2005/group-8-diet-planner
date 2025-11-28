@@ -1,0 +1,68 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Main gradient for coin -->
+    <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Leaf gradient -->
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shimmer effect -->
+    <radialGradient id="shine" cx="35%" cy="35%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Main coin shadow -->
+  <circle cx="100" cy="108" r="52" fill="#000000" opacity="0.1" filter="blur(3)"/>
+  
+  <!-- Main coin -->
+  <circle cx="100" cy="100" r="52" fill="url(#coinGrad)"/>
+  
+  <!-- Coin shine/gloss effect -->
+  <circle cx="100" cy="100" r="52" fill="url(#shine)"/>
+  
+  <!-- Inner coin border -->
+  <circle cx="100" cy="100" r="52" fill="none" stroke="#1E40AF" stroke-width="0.5" opacity="0.5"/>
+  
+  <!-- Dollar sign - stylized -->
+  <g transform="translate(100, 100)">
+    <!-- S curve left -->
+    <path d="M -2,-12 Q -8,-10 -8,-4 Q -8,0 -2,2 M -2,-12 Q -8,-10 -8,-4" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+    <!-- S curve right -->
+    <path d="M 2,-12 Q 8,-10 8,-4 Q 8,0 2,2 M 2,-12 Q 8,-10 8,-4" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+    <!-- Vertical lines -->
+    <line x1="-3" y1="-14" x2="-3" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+    <line x1="3" y1="-14" x2="3" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+  </g>
+  
+  <!-- Decorative leaf - top right -->
+  <g transform="translate(138, 62)">
+    <!-- Leaf shape using path -->
+    <path d="M 0,-16 Q 8,-10 8,0 Q 8,10 0,16 Q -8,10 -8,0 Q -8,-10 0,-16" fill="url(#leafGrad)" opacity="0.9"/>
+    <!-- Leaf center vein -->
+    <path d="M 0,-14 Q 1,-7 0,0 Q -1,7 0,14" stroke="white" stroke-width="1.5" fill="none" opacity="0.7"/>
+    <!-- Left veins -->
+    <path d="M -2,-8 Q -4,-6 -6,-4" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <path d="M -2,0 Q -4,1 -6,2" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <path d="M -2,8 Q -4,6 -6,4" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <!-- Right veins -->
+    <path d="M 2,-8 Q 4,-6 6,-4" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <path d="M 2,0 Q 4,1 6,2" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <path d="M 2,8 Q 4,6 6,4" stroke="white" stroke-width="0.8" fill="none" opacity="0.5"/>
+  </g>
+  
+  <!-- Subtle decorative circle accent - bottom left -->
+  <circle cx="68" cy="135" r="4" fill="none" stroke="#10B981" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="68" cy="135" r="2.5" fill="#10B981" opacity="0.3"/>
+  
+  <!-- Subtle decorative circle accent - top left -->
+  <circle cx="72" cy="65" r="3" fill="none" stroke="#3B82F6" stroke-width="1" opacity="0.3"/>
+</svg>

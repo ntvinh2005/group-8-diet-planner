@@ -6,7 +6,9 @@ import { signUp,
     addPantryItem, 
     updatePantry, 
     updateUser,
-    deletePantryItem, 
+    deletePantryItem,
+    upgradeToCreator,
+    downgradeToFollower,
     deleteUser } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -22,6 +24,8 @@ router.post("/login", logIn);
 
 // User Updates
 router.put("/:id", protectRoute, updateUser);
+router.patch("/upgrade-to-creator", protectRoute, upgradeToCreator);
+router.patch("/downgrade-to-follower", protectRoute, downgradeToFollower);
 router.delete("/delete", protectRoute, deleteUser);
 
 // Pantry Updates

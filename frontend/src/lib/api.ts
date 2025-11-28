@@ -43,6 +43,13 @@ export const recipeAPI = {
     return data.results as Recipe[];
   },
 
+  searchRecipe: async (query: string) => {
+    const { data } = await axiosInstance.get("/api/recipes/search/query", {
+      params: { q: query },
+    });
+    return data as Recipe[];
+  },
+
   getRecipe: async (recipeId: string) => {
     const { data } = await axiosInstance.get(`/api/recipes/${recipeId}`);
     return data as Recipe;
@@ -121,6 +128,18 @@ export const userAPI = {
 
   updateUser: async (userId: string, updates: Partial<User>) => {
     const { data } = await axiosInstance.put(`/api/users/${userId}`, updates);
+    return data.user as User;
+  },
+
+  upgradeToCreator: async () => {
+    const { data } = await axiosInstance.patch("/api/users/upgrade-to-creator");
+    return data.user as User;
+  },
+
+  downgradeToFollower: async () => {
+    const { data } = await axiosInstance.patch(
+      "/api/users/downgrade-to-follower"
+    );
     return data.user as User;
   },
 

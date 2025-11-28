@@ -13,7 +13,7 @@ app.use(express.json());
 // Configure CORS: allow origins from environment or fall back to common dev ports
 const allowedOrigins = process.env.FRONTEND_ORIGINS
     ? process.env.FRONTEND_ORIGINS.split(",").map((s) => s.trim())
-    : ["http://localhost:5173", "http://localhost:5174"];
+    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176"];
 
 app.use(
     cors({

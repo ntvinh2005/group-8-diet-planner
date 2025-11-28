@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { Logo } from "../components/Logo";
 import {
   useUserProfile,
   useDeletePantryItem,
@@ -67,16 +68,21 @@ export function PantryPage() {
             to="/dashboard"
             className="flex items-center gap-3 font-semibold text-slate-900 hover:text-slate-700 transition-colors"
           >
-            <div className="p-2 rounded-lg bg-green-50">
-              <Package className="w-6 h-6 text-green-600" />
-            </div>
+            <Logo className="w-8 h-8" />
             <span className="text-xl">BudgetBits</span>
           </Link>
-          <Link to="/dashboard">
-            <Button variant="outline" size="sm" className="font-medium">
-              Dashboard
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/ingredients">
+              <Button size="sm" className="font-medium shadow-sm">
+                + Add Ingredients
+              </Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button variant="outline" size="sm" className="font-medium">
+                Dashboard
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 

@@ -7,13 +7,13 @@ dotenv.config();
 
 export const getIngredient = asyncHandler(async (req, res) => {
     try {
-        const { ingredientID } = req.params;
+        const { ingredientId } = req.params;
 
-        const ingredient = await Ingredient.findById(ingredientID);
+        const ingredient = await Ingredient.findById(ingredientId);
 
         if (!ingredient) return res.status(404).json({ message: "Ingredient Not Found" });
 
-        return res.status(200).json( { ingredient });
+        return res.status(200).json(ingredient);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -49,27 +49,28 @@ export const searchIngredient =  asyncHandler(async (req, res) => {
 export const createIngredient =  asyncHandler(async (req, res) => {
     try {
 
-        const { ingredientName, ingredientCalories, ingredientAllergens } = req.body;
+        const { name, calories, allergenType } = req.body;
 
-        if (!(typeof ingredientName === "string" && ingredientName.trim().length > 0)) return res.status(400).json({ message: "Ingredient Name Must Be a String" });
+        if (!(typeof name === "string" && name.trim().length > 0)) return res.status(400).json({ message: "Ingredient Name Must Be a String" });
 
-        if (!(Number.isFinite(Number(ingredientCalories)))) return res.status(400).json({ message: "Ingredient Calorie Count Must Be a Number" });
+        if (!(Number.isFinite(Number(calories)))) return res.status(400).json({ message: "Ingredient Calorie Count Must Be a Number" });
 
-        if (ingredientCalories < 0) return res.status(400).json({ message: "Calorie Count Must Be Positive" });
+        if (calories < 0) return res.status(400).json({ message: "Calorie Count Must Be Positive" });
 
         const validationHelper = (arr, arrAllowed) => {
-            return (Array.isArray(arr) && arr.every(item => typeof item === "string" && arrAllowed.includes(item)));
+            if (!Array.isArray(arr)) return false;
+            return arr.every(item => typeof item === "string" && arrAllowed.includes(item));
         } 
 
-        if (!validationHelper(ingredientAllergens, ALLERGENS)) return req.status(400).json({ message: "Allergen List Must Have Valid Allergen Types" });
+        if (!validationHelper(allergenType || [], ALLERGENS)) return res.status(400).json({ message: "Allergen List Must Have Valid Allergen Types" });
 
         const ingredient = await Ingredient.create({
-            name: ingredientName,
-            calories: ingredientCalories,
-            allergenType: ingredientAllergens
+            name,
+            calories,
+            allergenType
         });
 
-        return res.status(201).json({ message: "Ingredient Successfully Created", ingredient });
+        return res.status(201).json(ingredient);
 
     } catch(err) {
         console.log(err);
@@ -79,13 +80,13 @@ export const createIngredient =  asyncHandler(async (req, res) => {
 
 export const updateIngredient =  asyncHandler(async (req, res) => {
     try {
-        const { ingredientID } = req.params;
+        const { ingredientId } = req.params;
 
-        const updatedIngredient = await Ingredient.findByIdAndUpdate(ingredientID, req.body, { new: true, runValidators: true });
+        const updatedIngredient = await Ingredient.findByIdAndUpdate(ingredientId, req.body, { new: true, runValidators: true });
 
         if (!updatedIngredient) return res.status(404).json({ message: "Ingredient Not Found" });
 
-        return res.status(200).json({ message: "Ingredient Successfully Updated", updatedIngredient});
+        return res.status(200).json(updatedIngredient);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -94,13 +95,13 @@ export const updateIngredient =  asyncHandler(async (req, res) => {
 
 export const deleteIngredient =  asyncHandler(async (req, res) => {
     try {
-        const { ingredientID } = req.params;
+        const { ingredientId } = req.params;
 
-        const ingredientDeleted = await Ingredient.findByIdAndUpdate(ingredientID);
+        const ingredientDeleted = await Ingredient.findByIdAndDelete(ingredientId);
 
-        if (!deleteIngredient) return res.status(404).json({ message: "Ingredient Not Found" });
+        if (!ingredientDeleted) return res.status(404).json({ message: "Ingredient Not Found" });
 
-        return res.status(200).json({ message: "Ingredient Sucessfully Deleted", ingredientID});
+        return res.status(200).json({ message: "Ingredient Successfully Deleted", ingredientId});
 
     } catch(err) {
         console.log(err);

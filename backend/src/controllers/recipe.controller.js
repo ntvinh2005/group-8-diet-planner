@@ -47,13 +47,34 @@ export const listRecipes = asyncHandler(async (req, res) => {
 
 export const getRecipe = asyncHandler(async (req, res) => {
     try {
-        const { recipeID } = req.params;
+        const { recipeId } = req.params;
         
-        const recipe = await Recipe.findById(recipeID);
+        const recipe = await Recipe.findById(recipeId);
         
         if (!recipe) return res.status(404).json({ message: "Recipe Not Found" });
         
-        return res.status(200).json( { recipe });
+        return res.status(200).json(recipe);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+export const searchRecipe = asyncHandler(async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        const filter = {};
+        if (q) {
+            filter.$or = [
+                { name: { $regex: q, $options: "i" }},
+                { shortDesciption: { $regex: q, $options: "i" }},
+                { longDesciption: { $regex: q, $options: "i" }}
+            ];
+        }
+
+        const recipes = await Recipe.find(filter).limit(10);
+        return res.status(200).json(recipes);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -62,9 +83,10 @@ export const getRecipe = asyncHandler(async (req, res) => {
 
 export const rateRecipe = asyncHandler(async (req, res) => {
     try {
-        const { recipeID, numberStars } = req.params;
+        const { recipeId } = req.params;
+        const { rating } = req.body;
 
-        let stars = Number(numberStars)
+        let stars = Number(rating)
 
         if (!Number.isFinite(stars)) return res.status(400).json({ message: "Number of Stars Must Be a Number" });
 
@@ -72,14 +94,14 @@ export const rateRecipe = asyncHandler(async (req, res) => {
         if (stars > 5) stars = 5;
 
         const recipe = await Recipe.findByIdAndUpdate(
-            recipeID,
+            recipeId,
             { numberOfStars: stars },
             { new: true, runValidators: true }
         );
 
         if (!recipe) return res.status(404).json({ message: "Recipe Not Found" });
 
-        return res.status(200).json({ message: "Recipe Sucessfully Rated", recipe });
+        return res.status(200).json(recipe);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -88,18 +110,18 @@ export const rateRecipe = asyncHandler(async (req, res) => {
 
 export const createRecipe = asyncHandler(async (req, res) => {
     try {
-        const { recipeName, recipeShortDescription, recipeLongDescription, recipeImage } = req.body;
+        const { name, shortDesciption, longDesciption, image } = req.body;
 
-        if (!recipeName) return res.status(400).json({ message: "Recipe Name Is Neeeded" });
+        if (!name) return res.status(400).json({ message: "Recipe Name Is Required" });
 
         const newRecipe = await Recipe.create({
-            name: recipeName.trim(),
-            shortDescription: recipeShortDescription ?? "",
-            longDesciption: recipeLongDescription ?? "",
-            image: recipeImage ?? ""
+            name: name.trim(),
+            shortDesciption: shortDesciption ?? "",
+            longDesciption: longDesciption ?? "",
+            image: image ?? ""
         });
 
-        return res.status(201).json({ message: "Recipe Successfully Created", newRecipe});
+        return res.status(201).json(newRecipe);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -108,13 +130,13 @@ export const createRecipe = asyncHandler(async (req, res) => {
 
 export const updateRecipe = asyncHandler(async (req, res) => {
     try {
-        const { recipeID } = req.params;
+        const { recipeId } = req.params;
 
-        const updatedRecipe = await Recipe.findByIdAndUpdate(recipeID, req.body, { new: true, runValidators: true });
+        const updatedRecipe = await Recipe.findByIdAndUpdate(recipeId, req.body, { new: true, runValidators: true });
 
         if (!updatedRecipe) return res.status(404).json({ message: "Recipe Not Found" });
 
-        return res.status(200).json({ message: "Recipe Successfully Updated", updatedRecipe});
+        return res.status(200).json(updatedRecipe);
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -123,13 +145,13 @@ export const updateRecipe = asyncHandler(async (req, res) => {
 
 export const deleteRecipe = asyncHandler(async (req, res) => {
     try {
-        const { recipeID } = req.params;
+        const { recipeId } = req.params;
         
-        const deletedRecipe = await Recipe.findByIdAndUpdate(recipeID);
+        const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
         
         if (!deletedRecipe) return res.status(404).json({ message: "Recipe Not Found" });
         
-        return res.status(200).json({ message: "Recipe Sucessfully Deleted", recipeID});
+        return res.status(200).json({ message: "Recipe Successfully Deleted", recipeId});
     } catch(err) {
         console.log(err);
         return res.status(500).json({ message: "Internal Server Error" });

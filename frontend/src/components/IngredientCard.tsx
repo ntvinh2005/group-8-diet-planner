@@ -5,6 +5,7 @@ interface IngredientCardProps {
   onSelect?: (id: string) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onAddToPantry?: (id: string) => void;
   canEdit?: boolean;
 }
 
@@ -13,6 +14,7 @@ export function IngredientCard({
   onSelect,
   onEdit,
   onDelete,
+  onAddToPantry,
   canEdit,
 }: IngredientCardProps) {
   return (
@@ -40,7 +42,15 @@ export function IngredientCard({
           </div>
         )}
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
+        {onAddToPantry && (
+          <button
+            onClick={() => onAddToPantry(ingredient._id)}
+            className="flex-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm min-w-fit"
+          >
+            Add to Pantry
+          </button>
+        )}
         {onSelect && (
           <button
             onClick={() => onSelect(ingredient._id)}

@@ -1,26 +1,20 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { useRecipes, useDeleteRecipe } from "../hooks/useAPI";
+import { useSearchRecipes, useDeleteRecipe } from "../hooks/useAPI";
 import { RecipeCard } from "../components/RecipeCard";
+import { Logo } from "../components/Logo";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
-import { ChefHat, AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export function RecipesPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: recipes, isLoading, error } = useRecipes();
-  const deleteRecipe = useDeleteRecipe();
   const [searchTerm, setSearchTerm] = useState("");
+  const { data: recipes, isLoading, error } = useSearchRecipes(searchTerm);
+  const deleteRecipe = useDeleteRecipe();
 
-  const canCreate =
-    user?.accountType === "Creator" || user?.accountType === "Admin";
-
-  const filteredRecipes = recipes?.filter((recipe) =>
-    recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecipes = recipes;
 
   const handleDelete = async (recipeId: string) => {
     if (confirm("Are you sure you want to delete this recipe?")) {
@@ -37,21 +31,17 @@ export function RecipesPage() {
             to="/dashboard"
             className="flex items-center gap-3 font-semibold text-slate-900 hover:text-slate-700 transition-colors"
           >
-            <div className="p-2 rounded-lg bg-blue-50">
-              <ChefHat className="w-6 h-6 text-blue-600" />
-            </div>
+            <Logo className="w-8 h-8" />
             <span className="text-xl">BudgetBits</span>
           </Link>
           <div className="flex items-center gap-3">
-            {canCreate && (
-              <Button
-                onClick={() => navigate("/recipes/new")}
-                size="sm"
-                className="font-medium shadow-sm"
-              >
-                + New Recipe
-              </Button>
-            )}
+            <Button
+              onClick={() => navigate("/recipes/new")}
+              size="sm"
+              className="font-medium shadow-sm"
+            >
+              + New Recipe
+            </Button>
             <Link to="/dashboard">
               <Button variant="outline" size="sm" className="font-medium">
                 Dashboard
@@ -112,7 +102,7 @@ export function RecipesPage() {
                 onSelect={(id) => navigate(`/recipes/${id}`)}
                 onEdit={(id) => navigate(`/recipes/${id}/edit`)}
                 onDelete={() => handleDelete(recipe._id)}
-                canEdit={canCreate}
+                canEdit={true}
               />
             ))}
           </div>
@@ -120,7 +110,7 @@ export function RecipesPage() {
           <Card className="border-slate-200/60">
             <CardContent className="pt-16 pb-16 text-center space-y-5">
               <div className="p-4 rounded-2xl bg-slate-100 w-fit mx-auto">
-                <ChefHat className="w-16 h-16 text-slate-400" />
+                <Logo className="w-16 h-16" />
               </div>
               <div className="space-y-2">
                 <p className="text-slate-900 font-semibold text-xl">
@@ -132,7 +122,7 @@ export function RecipesPage() {
                     : "Get started by creating your first recipe"}
                 </p>
               </div>
-              {!searchTerm && canCreate && (
+              {!searchTerm && (
                 <Button
                   onClick={() => navigate("/recipes/new")}
                   className="mt-6"

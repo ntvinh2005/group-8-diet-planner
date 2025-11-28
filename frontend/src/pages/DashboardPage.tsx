@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui/button";
+import { Logo } from "../components/Logo";
 import {
   Card,
   CardContent,
@@ -19,9 +20,7 @@ export function DashboardPage() {
       <nav className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow-lg">
-              {user?.username?.charAt(0).toUpperCase() || "B"}
-            </div>
+            <Logo className="w-11 h-11" />
             <div>
               <h1 className="text-xl font-bold text-slate-900">BudgetBits</h1>
               <p className="text-xs text-slate-500 font-medium">

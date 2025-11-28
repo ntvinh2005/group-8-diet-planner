@@ -37,7 +37,7 @@ export function RecipeCard({
               <span
                 key={i}
                 className={
-                  i < Math.round(recipe.numberOfStars)
+                  i < Math.round(recipe.numberOfStars || 0)
                     ? "text-yellow-400"
                     : "text-gray-300"
                 }
@@ -47,7 +47,7 @@ export function RecipeCard({
             ))}
           </div>
           <span className="text-sm text-gray-600">
-            ({recipe.numberOfStars.toFixed(1)})
+            ({(recipe.numberOfStars || 0).toFixed(1)})
           </span>
         </div>
         <div className="flex gap-2">

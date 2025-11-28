@@ -11,8 +11,8 @@ import { getIngredient,
 const router = express.Router();
 
 // Public Routes
+router.get("/search/query", searchIngredient);
 router.get("/:ingredientId", getIngredient);
-router.get("search/query", searchIngredient);
 
 // Protected Routes
 router.post("/create", protectRoute, authorizeRecipePerms, createIngredient);
