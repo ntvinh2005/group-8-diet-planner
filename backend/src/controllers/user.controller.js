@@ -58,12 +58,6 @@ export const signUp = asyncHandler(async (req, res) => {
             const field = Object.keys(err.keyValue || {})[0] || "field";
             return res.status(409).json({ message: `${field} Already In Use` });
         }
-        if (err?.name === "ValidationError") {
-            const details = Object.fromEntries(
-                Object.entries(err.errors || {}).map(([k, v]) => [k, v.message])
-            );
-            return res.status(400).json({ message: "Validation Error", details });
-        }
         console.error(err);
         return res.status(500).json({ message: "Internal Server Error" });
     }
