@@ -39,7 +39,7 @@ export function PantryPage() {
 
   const totalCalories =
     userProfile?.pantry.reduce(
-      (sum, item) => sum + item.calories * item.count,
+      (sum, item) => sum + (item.calories || 0) * (item.count || 0),
       0
     ) || 0;
   const filteredPantry = userProfile?.pantry.filter((item) =>
@@ -126,7 +126,8 @@ export function PantryPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-slate-900">
-                {totalCalories}
+                {totalCalories}{" "}
+                <span className="text-lg text-slate-600">kcal</span>
               </div>
               <p className="text-sm text-slate-500 mt-2">Estimated total</p>
             </CardContent>

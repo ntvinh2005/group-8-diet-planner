@@ -7,12 +7,16 @@ interface PantryCardProps {
 }
 
 export function PantryCard({ item, onUpdate, onDelete }: PantryCardProps) {
+  const totalItemCalories = (item.calories || 0) * (item.count || 1);
+
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-semibold text-gray-800">{item.name}</h3>
-          <p className="text-sm text-gray-600">{item.calories} cal</p>
+          <p className="text-sm text-gray-600">
+            {item.calories} cal × {item.count} = {totalItemCalories} cal
+          </p>
         </div>
         {onDelete && (
           <button
